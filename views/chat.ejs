@@ -1,0 +1,127 @@
+<%- include('partials/header') %>
+
+<!-- Модальное окно ввода имени -->
+<div class="modal-overlay" id="join-modal">
+  <div class="modal">
+    <h2 class="modal-title">Викторина</h2>
+    <p class="modal-sub">Введите ваше имя, чтобы присоединиться к игре</p>
+    <form id="join-form" autocomplete="off">
+      <div class="field">
+        <label for="player-name">Имя игрока</label>
+        <input
+          id="player-name"
+          type="text"
+          maxlength="32"
+          placeholder="Например: Алексей"
+          autofocus
+          required
+        >
+      </div>
+      <div id="join-error" class="toast error" hidden></div>
+      <button class="btn btn-primary" type="submit" style="width:100%;margin-top:.75rem;">
+        Войти в игру
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Основной интерфейс -->
+<div class="quiz-layout">
+
+  <!-- ══ Игровая панель ══════════════════════════════════════════════════ -->
+  <section class="quiz-panel panel">
+
+    <div class="quiz-header">
+      <h1 class="quiz-title">Викторина</h1>
+      <span class="badge" id="state-badge">Ожидание</span>
+    </div>
+
+    <!-- Фаза: ожидание -->
+    <div class="quiz-phase" id="phase-idle">
+      <p class="muted" id="idle-hint">Ожидаем игроков…</p>
+      <button class="btn btn-primary" id="start-btn" disabled>Начать игру</button>
+    </div>
+
+    <!-- Кнопка завершения (видна во время игры) -->
+    <div id="stop-wrap" hidden>
+      <button class="btn btn-stop" id="stop-btn">Завершить игру</button>
+    </div>
+
+    <!-- Фаза: вопрос -->
+    <div class="quiz-phase" id="phase-question" hidden>
+      <div class="q-meta">
+        <span class="muted" id="q-counter">Вопрос 1 / 12</span>
+        <div class="timer-wrap">
+          <svg class="timer-ring" viewBox="0 0 44 44" aria-hidden="true">
+            <circle class="timer-track" cx="22" cy="22" r="18"/>
+            <circle class="timer-fill" id="timer-arc" cx="22" cy="22" r="18"
+                    stroke-dasharray="113.1" stroke-dashoffset="0"/>
+          </svg>
+          <span class="timer-num" id="timer-num">20</span>
+        </div>
+      </div>
+
+      <p class="question-text" id="question-text"></p>
+
+      <div class="options-grid" id="options-grid">
+        <button class="opt-btn" data-letter="A"><span class="opt-letter">A</span><span class="opt-text" id="opt-A"></span></button>
+        <button class="opt-btn" data-letter="B"><span class="opt-letter">B</span><span class="opt-text" id="opt-B"></span></button>
+        <button class="opt-btn" data-letter="C"><span class="opt-letter">C</span><span class="opt-text" id="opt-C"></span></button>
+        <button class="opt-btn" data-letter="D"><span class="opt-letter">D</span><span class="opt-text" id="opt-D"></span></button>
+      </div>
+
+      <p class="muted answered-hint" id="answered-hint" hidden>Вы ответили — ждём остальных…</p>
+    </div>
+
+    <!-- Фаза: результат вопроса -->
+    <div class="quiz-phase" id="phase-result" hidden>
+      <div class="result-card" id="result-card">
+        <div class="result-answer" id="result-answer"></div>
+        <p class="result-explanation" id="result-explanation"></p>
+        <p class="muted result-next">Следующий вопрос через несколько секунд…</p>
+      </div>
+    </div>
+
+    <!-- Фаза: конец игры -->
+    <div class="quiz-phase" id="phase-gameover" hidden>
+      <div class="gameover-banner">
+        <div class="gameover-title">Игра окончена!</div>
+        <p class="muted" id="winner-line"></p>
+      </div>
+      <button class="btn btn-primary" id="reset-btn">Играть снова</button>
+    </div>
+
+    <!-- Таблица очков (видна во всех фазах) -->
+    <div class="scoreboard" id="scoreboard" hidden>
+      <h3 class="scoreboard-title">Очки</h3>
+      <ol class="score-list" id="score-list"></ol>
+    </div>
+  </section>
+
+  <!-- ══ Чат ═════════════════════════════════════════════════════════════ -->
+  <section class="chat-panel panel">
+    <div class="chat-header">
+      <h2 class="chat-title">Чат</h2>
+      <span class="muted online-count" id="online-count">0 онлайн</span>
+    </div>
+
+    <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
+
+    <form class="chat-form" id="chat-form" autocomplete="off">
+      <input
+        class="chat-input"
+        id="chat-input"
+        type="text"
+        maxlength="500"
+        placeholder="Сообщение…"
+        disabled
+      >
+      <button class="btn btn-primary" type="submit" id="chat-send" disabled>→</button>
+    </form>
+  </section>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/chat.js"></script>
+
+<%- include('partials/footer') %>
